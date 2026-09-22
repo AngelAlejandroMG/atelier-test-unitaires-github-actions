@@ -3,6 +3,8 @@ on:
     push:
         branches:
             - main
+    workflow_dispatch:
+#Ma definition de job qui va sexecuter sur la branche...     
 jobs:
     compilation:
         runs-on: ubuntu-latest
