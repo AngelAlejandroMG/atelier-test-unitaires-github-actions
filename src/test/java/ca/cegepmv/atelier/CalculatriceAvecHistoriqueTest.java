@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
  *   quels arguments), sans se soucier de ce qu'elle "fait" réellement.
  * - @ExtendWith(MockitoExtension.class) : active l'intégration Mockito avec JUnit 6, pour que
  *   les champs annotés @Mock soient automatiquement initialisés avant chaque test.
- *//
+ */
 @ExtendWith(MockitoExtension.class)
 class CalculatriceAvecHistoriqueTest {
 
