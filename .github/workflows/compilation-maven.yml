@@ -20,3 +20,18 @@ jobs:
               run: chmod +x mvnw
             - name: Compilation du projet Maven
               run: ./mvnw compile
+
+            - name: Build and run tests
+              run: ./mvnw -B clean verify
+
+            - name: Publier le rapport de tests                     # s'exécute même si les tests précédents ont échoué
+              uses: actions/upload-artifact@v5
+              with:
+                name: jacoco
+                path: target\site\jacoco
+
+            - name:
+              uses: actions/upload-artifact@v5
+              with:
+                name: application.jar
+                path: target/*.jar

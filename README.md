@@ -1,6 +1,6 @@
 ## Atelier — Tests unitaires (révision) + premier pipeline CI
 
-Petit projet Java autonome (Maven, JDK 21, JUnit 6) — aucune dépendance à Spring ni à une
+Petit projet Java autonome (Maven, JDK 25, JUnit 6) — aucune dépendance à Spring ni à une
 base de données. Il sert uniquement à revoir les bases des tests unitaires avant de construire
 un pipeline d'intégration continue.
 
@@ -65,7 +65,7 @@ porte sur une **interaction** avec la dépendance plutôt que sur une valeur de 
 
 Ajoutez vous-même un workflow GitHub Actions (`.github/workflows/ci.yml`) qui :
 1. Récupère le code (`actions/checkout`).
-2. Installe le JDK 21 (`actions/setup-java`).
+2. Installe le JDK 25 (`actions/setup-java`).
 3. Exécute `./mvnw -B clean verify` (ou `test`, selon ce que vous voulez valider).
 4. Se déclenche sur chaque `push` et chaque `pull_request`.
 
