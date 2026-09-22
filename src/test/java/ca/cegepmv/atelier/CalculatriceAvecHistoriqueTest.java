@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
  *   quels arguments), sans se soucier de ce qu'elle "fait" réellement.
  * - @ExtendWith(MockitoExtension.class) : active l'intégration Mockito avec JUnit 6, pour que
  *   les champs annotés @Mock soient automatiquement initialisés avant chaque test.
- *//* 
+ *//
 @ExtendWith(MockitoExtension.class)
 class CalculatriceAvecHistoriqueTest {
 
@@ -54,12 +54,14 @@ class CalculatriceAvecHistoriqueTest {
     void additionnerEnregistreUneEntreeDansLeJournal() {
         // TODO: Act
         // Appelez calculatrice.additionner(2, 3)
+        calculatrice.additionner(2, 3);
 
         // TODO: Assert
         // Utilisez verify(journalMock).enregistrer(...) pour vérifier qu'un message a bien
         // été enregistré. Astuce : vous pouvez vérifier le message exact attendu :
         // verify(journalMock).enregistrer("2 + 3 = 5");
-        fail("Test à compléter");
+        verify(journalMock).enregistrer("2 + 3 = 5");
+
     }
 
     @Test
@@ -69,7 +71,10 @@ class CalculatriceAvecHistoriqueTest {
         // ET utilisez verify(journalMock, never()).enregistrer(anyString()) pour vérifier
         // qu'aucun message n'a été enregistré dans ce cas (puisque l'exception est lancée
         // AVANT l'appel à journal.enregistrer(...)).
-        fail("Test à compléter");
+         ArithmeticException exception = 
+        assertThrows(ArithmeticException.class, () -> calculatrice.diviser(10, 0));
+        
+        assertNotNull(exception.getMessage());
+        verify(journalMock, never()).enregistrer(anyString()); 
     }
 }
-*/
