@@ -1,54 +1,76 @@
-name: Compilation du projet Maven
-on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
- 
-jobs:
-    compilation:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v5
-            - name: Set up JDK 21
-              uses: actions/setup-java@v5
-              with:
-                distribution: 'temurin'
-                java-version: '25'
-            - name: Fournir accès au runner
-              run: chmod +x mvnw
-            - name: Compilation projet Maven
-              run: ./mvnw compile
- 
-            - name: Build and run tests
-              run: ./mvnw -B clean verify
- 
-            - name: Publier le rapport de tests
-              uses: actions/upload-artifact@v5
-              with:
-                name: jacoco
-                path: target/site/jacoco/
-            - name: Publier le .jar en artefact
-              uses: actions/upload-artifact@v5
-              with:
-              name: application-jar
-              path: target/*.jar 
-            
-            # .github/workflows/maven-build-master.yml (projet spring-petclinic-rest)
-            - name: Build and analyze
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-              run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=spring-petclinic_spring-petclinic-rest -Dsonar.organization=spring-petclinic         # ex. target/spring-petclinic-rest-*.jar
-        build-and-push:
-              needs: test-and-analyze   # <- n'exécute ce job QUE si test-and-analyze a réussi
-              runs-on: ubuntu-latest
-              steps:
-                - name: Checkout repository
-                  uses: actions/checkout@v5
 
-                - name: Build with Maven
-                  run: ./mvnw -B package -DskipTests  # produit le .jar dans target/
-            
-           
+name: Compilation du projet Maven
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Fournir accès au runner
+        run: chmod +x mvnw
+
+      - name: Compilation projet Maven
+        run: ./mvnw compile
+
+      - name: Build and run tests
+        run: ./mvnw -B clean verify
+
+      - name: Publier le rapport de tests
+        uses: actions/upload-artifact@v5
+        with:
+          name: jacoco
+          path: target/site/jacoco/
+
+      - name: Publier le .jar en artefact
+        uses: actions/upload-artifact@v5
+        with:
+          name: application-jar
+          path: target/*.jar
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.8.0.7211:sonar \
+            -Dsonar.projectKey=TON_PROJECT_KEY \
+            -Dsonar.organization=TON_ORGANIZATION \
+            -Dsonar.qualitygate.wait=true
+
+  build-and-push:
+    needs: test-and-analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Fournir accès au runner
+        run: chmod +x mvnw
+
+      - name: Build with Maven
+        run: ./mvnw -B package -DskipTests
