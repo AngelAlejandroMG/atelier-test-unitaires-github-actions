@@ -29,11 +29,26 @@ jobs:
               with:
                 name: jacoco
                 path: target/site/jacoco/
-            - name: Build
-              run: ./mvnw -B clean package -DskipTests   # produit le .jar dans target/
-         
             - name: Publier le .jar en artefact
               uses: actions/upload-artifact@v5
               with:
-                name: application-jar
-                path: target/*.jar          # ex. target/spring-petclinic-rest-*.jar
+              name: application-jar
+              path: target/*.jar 
+            
+            # .github/workflows/maven-build-master.yml (projet spring-petclinic-rest)
+            - name: Build and analyze
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=spring-petclinic_spring-petclinic-rest -Dsonar.organization=spring-petclinic         # ex. target/spring-petclinic-rest-*.jar
+        build-and-push:
+              needs: test-and-analyze   # <- n'exécute ce job QUE si test-and-analyze a réussi
+              runs-on: ubuntu-latest
+              steps:
+                - name: Checkout repository
+                  uses: actions/checkout@v5
+
+                - name: Build with Maven
+                  run: ./mvnw -B package -DskipTests  # produit le .jar dans target/
+            
+           
